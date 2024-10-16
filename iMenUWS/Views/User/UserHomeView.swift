@@ -8,8 +8,28 @@
 import SwiftUI
 
 struct UserHomeView: View {
+    @State private var searchText: String = ""
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            ScrollView(showsIndicators: false){
+                
+                VStack(alignment: .leading,spacing: -10){
+                    
+                    Text("Top Picks")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding([.horizontal,.bottom])
+                    // Restaurant rows displayed in a VStack
+                    
+                    
+                    
+                    
+                }
+                .navigationTitle("Home")
+                .searchable(text: $searchText)
+                
+            }
+        }
     }
 }
 
