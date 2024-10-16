@@ -175,6 +175,6 @@ struct FoodCardContent: View {
     }
 }
 
-#Preview {
+#Preview{
     UserFoodDetailsView()
 }

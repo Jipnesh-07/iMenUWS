@@ -28,7 +28,6 @@ import Foundation
 //]
 
 
-// Model for Restaurant
 struct Restaurant: Identifiable {
     var id: Int
     var name: String
@@ -41,12 +40,13 @@ struct Restaurant: Identifiable {
     var amenities: [String]
     var cuisines: [String]
     var pricePerPerson: Double
+    var latitude: Double // Add latitude
+    var longitude: Double // Add longitude
 }
 
 
-// Sample Restaurant Data
+
 let sampleRestaurants: [Restaurant] = [
-    Restaurant(id: 1, name: "The Gourmet House", cuisine: "Italian", location: "Rome, Italy", minimumOrderCharge: 50.0, image: "r1", rating: 4.8, reviewCount: 200, amenities: ["Wi-Fi", "Parking", "Air Conditioning", "Outdoor Seating"], cuisines: ["Italian", "Vegetarian"], pricePerPerson: 100.0),
-    Restaurant(id: 2, name: "Mountain View Lodge", cuisine: "Chinese", location: "Beijing, China", minimumOrderCharge: 60.0, image: "r2", rating: 4.5, reviewCount: 150, amenities: ["Wi-Fi", "Outdoor Seating"], cuisines: ["Chinese", "Vegetarian"], pricePerPerson: 80.0),
-    // Add more restaurants...
+    Restaurant(id: 1, name: "The Gourmet House", cuisine: "Italian", location: "Rome, Italy", minimumOrderCharge: 50.0, image: "r1", rating: 4.8, reviewCount: 200, amenities: ["Wi-Fi", "Parking", "Air Conditioning", "Outdoor Seating"], cuisines: ["Italian", "Vegetarian"], pricePerPerson: 100.0, latitude: 41.9028, longitude: 12.4964),
+    Restaurant(id: 2, name: "Mountain View Lodge", cuisine: "Chinese", location: "Beijing, China", minimumOrderCharge: 60.0, image: "r2", rating: 4.5, reviewCount: 150, amenities: ["Wi-Fi", "Outdoor Seating"], cuisines: ["Chinese", "Vegetarian"], pricePerPerson: 80.0, latitude: 39.9042, longitude: 116.4074)
 ]
