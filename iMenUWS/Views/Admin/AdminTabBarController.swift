@@ -14,6 +14,12 @@ struct AdminTabBarController: View {
                 .tabItem{
                     Label("Home", systemImage: "house.fill")
                 }
+            
+            AdminProfileView()
+                .tabItem{
+                    Label("Profile", systemImage: "person.fill")
+                }
+            
         }
     }
 }

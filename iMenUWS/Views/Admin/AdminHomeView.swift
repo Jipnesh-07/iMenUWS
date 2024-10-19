@@ -47,6 +47,8 @@ struct AdminHomeView: View {
                 AddRestaurantView()
             }
         }
+        .navigationBarBackButtonHidden(true) // Hide the back button
+
     }
     
     // Computed property for filtered restaurants

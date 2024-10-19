@@ -41,6 +41,8 @@ struct UserHomeView: View {
                 .searchable(text: $searchText, prompt: "Search Restaurants")
             }
         }
+        .navigationBarBackButtonHidden(true) // Hide the back button
+
     }
 }
 

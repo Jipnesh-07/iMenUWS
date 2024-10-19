@@ -21,7 +21,11 @@ struct FoodItem: Identifiable {
 let foodList: [FoodItem] = [
     FoodItem(id: 1, name: "Burger", restaurantId: 1, ingredients: "Bread and cheese", price: 60, image: "r2", description: "Our juicy burger is made with a succulent, hand-formed patty that is grilled to perfection. It is served on a toasty bun with a crisp lettuce leaf, ripe tomato slices, and a heaping helping of creamy, melted cheese. To finish it off, we add a generous dollop of zesty sauce that perfectly complements the flavors of the patty and vegetables."),
     
-    FoodItem(id: 2, name: "Pizza", restaurantId: 2, ingredients: "Bread and cheese", price: 180, image: "r4", description: "Our juicy burger is made with a succulent, hand-formed patty that is grilled to perfection. It is served on a toasty bun with a crisp lettuce leaf, ripe tomato slices, and a heaping helping of creamy, melted cheese. To finish it off, we add a generous dollop of zesty sauce that perfectly complements the flavors of the patty and vegetables.")
+    FoodItem(id: 2, name: "Pizza", restaurantId: 1, ingredients: "Bread and cheese", price: 180, image: "r4", description: "Our juicy burger is made with a succulent, hand-formed patty that is grilled to perfection. It is served on a toasty bun with a crisp lettuce leaf, ripe tomato slices, and a heaping helping of creamy, melted cheese. To finish it off, we add a generous dollop of zesty sauce that perfectly complements the flavors of the patty and vegetables."),
     
+    
+    FoodItem(id: 2, name: "Pizza", restaurantId: 1, ingredients: "Bread and cheese", price: 180, image: "r4", description: "Our juicy burger is made with a succulent, hand-formed patty that is grilled to perfection. It is served on a toasty bun with a crisp lettuce leaf, ripe tomato slices, and a heaping helping of creamy, melted cheese. To finish it off, we add a generous dollop of zesty sauce that perfectly complements the flavors of the patty and vegetables."),
+    
+    FoodItem(id: 2, name: "Pizza", restaurantId: 2, ingredients: "Bread and cheese", price: 180, image: "r4", description: "Our juicy burger is made with a succulent, hand-formed patty that is grilled to perfection. It is served on a toasty bun with a crisp lettuce leaf, ripe tomato slices, and a heaping helping of creamy, melted cheese. To finish it off, we add a generous dollop of zesty sauce that perfectly complements the flavors of the patty and vegetables.")
     
 ]

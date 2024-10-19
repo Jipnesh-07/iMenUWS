@@ -1,25 +1,11 @@
-//
-//  UserRestaurantDetailView.swift
-//  iMenUWS
-//
-//  Created by student on 16/10/24.
-//
-
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct RestaurantDetailsView: View {
     var restaurant: Restaurant
-    @State private var region: MKCoordinateRegion
-
-    // Initialize the view and set up the map region
-    init(restaurant: Restaurant) {
-        self.restaurant = restaurant
-        self._region = State(initialValue: MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: restaurant.latitude, longitude: restaurant.longitude),
-            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        ))
-    }
+    @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+    @State private var locationManager = LocationManager() // Geocoding helper
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -44,11 +30,27 @@ struct RestaurantDetailsView: View {
                 Divider()
                 
                 // Restaurant Location Map
-                RestaurantLocationView(region: $region, locationName: restaurant.location)
+                if let coordinates = locationManager.locationCoordinates {
+                    RestaurantLocationView(region: $region, locationName: restaurant.location)
+                        .onAppear {
+                            updateMapRegion(coordinates: coordinates)
+                        }
+                } else if let errorMessage = locationManager.errorMessage {
+                    Text(errorMessage).foregroundColor(.red)
+                } else {
+                    Text("Fetching location for \(restaurant.location)...")
+                }
             }
             .navigationTitle(restaurant.name)
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                locationManager.fetchCoordinates(for: restaurant.location)
+            }
         }
+    }
+    
+    private func updateMapRegion(coordinates: CLLocationCoordinate2D) {
+        region = MKCoordinateRegion(center: coordinates, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
     }
 }
 
@@ -56,12 +58,9 @@ struct RestaurantFoodItemsView: View {
     var restaurantId: Int
     
     var body: some View {
-    
-          
-            ForEach(foodList.filter { $0.restaurantId == restaurantId }) { foodItem in
-                FoodItemRow(foodItem: foodItem)
-            }
-    
+        ForEach(foodList.filter { $0.restaurantId == restaurantId }) { foodItem in
+            FoodItemRow(foodItem: foodItem)
+        }
     }
 }
 
@@ -75,7 +74,6 @@ struct RestaurantInfoView: View {
                 .font(.title)
                 .bold()
             
-
             HStack {
                 // Restaurant Location
                 Text(restaurant.location)
@@ -128,27 +126,6 @@ struct RestaurantLocationView: View {
                 .font(.caption)
                 .padding(.top, 4)
                 .foregroundColor(.gray)
-        }
-        .padding()
-    }
-}
-
-struct RestaurantFeaturesView: View {
-    var amenities: [String]
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("Amenities")
-                .font(.headline)
-
-            ForEach(amenities, id: \.self) { amenity in
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                    Text(amenity)
-                }
-                .padding(.vertical, 2)
-            }
         }
         .padding()
     }
