@@ -14,6 +14,11 @@ struct UserTabBarControllerr: View {
                 .tabItem{
                     Label("Home", systemImage: "house.fill")
                 }
+            
+            UserHomeView()
+                .tabItem{
+                    Label("Orders", systemImage: "basket.fill")
+                }
         }
     }
 }

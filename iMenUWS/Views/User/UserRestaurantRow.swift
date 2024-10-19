@@ -29,20 +29,24 @@ struct UserRestaurantRow: View {
                     Text(restaurant.name)
                         .font(.headline)
                         .fontWeight(.bold)
+                        .foregroundColor(.black)
+                    
                     
                     Text(restaurant.location)
                         .font(.subheadline)
                         .foregroundStyle(.gray)
                     
-                    // Cuisines
-                    Text(restaurant.cuisines.joined(separator: ", "))
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
-                    
+//                    // Cuisines
+//                    Text(restaurant.cuisines.joined(separator: ", "))
+//                        .font(.subheadline)
+//                        .foregroundStyle(.gray)
+//                    
                     // Price per person
                     HStack(spacing: 4) {
                         Text("$\(restaurant.pricePerPerson, specifier: "%.2f")")
                             .fontWeight(.semibold)
+                            .foregroundColor(.black)
+                        
                         
                         Text("per person")
                             .foregroundStyle(.gray)
@@ -59,6 +63,8 @@ struct UserRestaurantRow: View {
                         
                         Text("\(restaurant.rating, specifier: "%.1f")")
                             .fontWeight(.bold)
+                            .foregroundColor(.black)
+                        
                     }
                     
                     Text("(\(restaurant.reviewCount) reviews)")

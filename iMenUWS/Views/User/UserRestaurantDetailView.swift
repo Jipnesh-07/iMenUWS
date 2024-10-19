@@ -22,7 +22,7 @@ struct RestaurantDetailsView: View {
     }
 
     var body: some View {
-        ScrollView(showsIndicators: true) {
+        ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
                 // Restaurant Image
                 if let imageName = restaurant.image {
@@ -74,6 +74,7 @@ struct RestaurantInfoView: View {
             Text(restaurant.name)
                 .font(.title)
                 .bold()
+            
 
             HStack {
                 // Restaurant Location

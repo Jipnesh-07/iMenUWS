@@ -20,7 +20,7 @@ struct AdminHomeView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding([.horizontal,.bottom])
-                    // Restaurant rows displayed in a VStack
+                    // Restaurant rowxs displayed in a VStack
                     ForEach(filteredRestaurants) { restaurant in
                         NavigationLink(destination: RestaurantDetailView(restaurant: restaurant)) {
                             RestaurantRow(restaurant: restaurant)
