@@ -31,22 +31,15 @@ struct UserRestaurantRow: View {
                         .fontWeight(.bold)
                         .foregroundColor(.black)
                     
-                    
                     Text(restaurant.location)
                         .font(.subheadline)
                         .foregroundStyle(.gray)
                     
-//                    // Cuisines
-//                    Text(restaurant.cuisines.joined(separator: ", "))
-//                        .font(.subheadline)
-//                        .foregroundStyle(.gray)
-//                    
-                    // Price per person
+                    // Minimum Order Charge
                     HStack(spacing: 4) {
-                        Text("$\(restaurant.pricePerPerson, specifier: "%.2f")")
+                        Text("$\(restaurant.minimumOrderCharge, specifier: "%.2f")")
                             .fontWeight(.semibold)
                             .foregroundColor(.black)
-                        
                         
                         Text("per person")
                             .foregroundStyle(.gray)
@@ -55,7 +48,7 @@ struct UserRestaurantRow: View {
                 
                 Spacer()
                 
-                // Ratings and reviews
+                // Ratings
                 VStack {
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
@@ -64,17 +57,20 @@ struct UserRestaurantRow: View {
                         Text("\(restaurant.rating, specifier: "%.1f")")
                             .fontWeight(.bold)
                             .foregroundColor(.black)
-                        
                     }
-                    
-                    Text("(\(restaurant.reviewCount) reviews)")
-                        .font(.footnote)
-                        .foregroundStyle(.gray)
                 }
             }
             .font(.footnote)
         }
-        .padding(.horizontal)
+        .padding()
+        .background(Color.white) // White background
+        .cornerRadius(10) // Rounded corners
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2) // Minimal shadow
+        .overlay(
+            RoundedRectangle(cornerRadius: 10) // Border with same corner radius
+                .stroke(Color.gray.opacity(0.2), lineWidth: 1) // Light gray border
+        )
+//        .padding(.horizontal) 
     }
 }
 

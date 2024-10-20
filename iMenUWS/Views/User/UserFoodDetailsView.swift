@@ -13,7 +13,7 @@ struct UserFoodDetailsView: View {
     var body: some View {
         
         ZStack {
-            Color(.yellow)
+            Color(red: 238/255, green: 189/255, blue: 141/255)
                 .ignoresSafeArea(.all)
             //
             VStack {

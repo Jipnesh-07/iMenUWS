@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct iMenUWSApp: App {
+    @StateObject private var orderManager = OrderManager() // Initialize OrderManager
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(orderManager) // Provide it to the environment
+
         }
     }
 }

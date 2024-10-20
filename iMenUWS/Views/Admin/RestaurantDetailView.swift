@@ -6,142 +6,138 @@
 //
 
 import SwiftUI
+import MapKit
+import CoreLocation
 
 struct RestaurantDetailView: View {
-    var restaurant: Restaurant
+    @State private var isEditing = false
+    @State var restaurant: Restaurant
+    @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+    @State private var locationManager = LocationManager() // Geocoding helper
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            VStack {
-                // Image Carousel
-                TabView {
-                    if let imageName = restaurant.image {
-                        Image(imageName)
-                            .resizable()
-                            .scaledToFill()
-                    } else {
-                        Rectangle()
-                            .fill(Color.gray)
-                            .frame(height: 300)
-                    }
+            VStack(alignment: .leading) {
+                // Restaurant Image
+                if let imageName = restaurant.image {
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 250)
+                        .clipped()
+                } else {
+                    Rectangle()
+                        .fill(Color.gray)
+                        .frame(height: 250)
                 }
-                .frame(height: 300)
-                .tabViewStyle(PageTabViewStyle())
                 
-                // Restaurant Name and Rating
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(restaurant.name)
-                        .font(.title)
-                        .fontWeight(.bold)
-                    
-                    HStack {
-                        
-                        Text(restaurant.location)
-                            .font(.callout)
-                    }
-                    
-                    Divider()
-                    
-                    
-                    // Cuisines
-                    Text("Cuisines")
-                        .font(.headline)
-                    
-                    HStack(spacing: 10) {
-                        ForEach(restaurant.cuisines, id: \.self) { cuisine in
-                            CuisineTagView(cuisine: cuisine)
+                // Restaurant Details
+                AdminRestaurantInfoView(restaurant: restaurant)
+                
+                Divider()
+                
+                // Restaurant Location Map
+                if let coordinates = locationManager.locationCoordinates {
+                    RestaurantLocationView(region: $region, locationName: restaurant.location)
+                        .onAppear {
+                            updateMapRegion(coordinates: coordinates)
                         }
-                    }
-                    
-                    Divider()
-                    
-                    // Self-Check-in and Special Features
-                    Text("Minimum Order: €\(restaurant.minimumOrderCharge, specifier: "%.2f")")
-                        .font(.headline)
-                    
-                    Text("Check yourself in easily with the lockbox.")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                    
-                    // Check-in Experience
-                    HStack {
-                        Image(systemName: "checkmark.seal.fill")
-                            .foregroundColor(.green)
-                        Text("Great check-in experience")
-                            .font(.subheadline)
-                    }
+                } else if let errorMessage = locationManager.errorMessage {
+                    Text(errorMessage).foregroundColor(.red)
+                } else {
+                    Text("Fetching location for \(restaurant.location)...")
                 }
-                .padding()
                 
-                Spacer()
                 
-                // Book Now Button
-                HStack {
-                    Text("€\(restaurant.pricePerPerson, specifier: "%.2f")")
-                        .font(.title)
-                        .fontWeight(.bold)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        // Booking action
-                    }) {
-                        Text("Book Now")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(width: 150, height: 50)
-                            .background(Color.blue)
-                            .cornerRadius(10)
-                    }
-                }
-                .padding()
+                
+                
             }
             .navigationBarTitle(restaurant.name, displayMode: .inline)
+            .navigationBarItems(trailing: Button(action: {
+                isEditing = true // Present the edit modal
+            }) {
+                Text("Edit")
+            })
+            .sheet(isPresented: $isEditing) {
+                EditRestaurantView(restaurant: $restaurant) // Bind the restaurant to edit
+            }
+            .onAppear {
+                locationManager.fetchCoordinates(for: restaurant.location)
+            }
         }
     }
     
-    // A function to map amenity names to system icons (example)
-    func amenityIcon(for amenity: String) -> String {
-        switch amenity {
-        case "Wi-Fi": return "wifi"
-        case "Parking": return "car"
-        case "Air Conditioning": return "snow"
-        case "Outdoor Seating": return "leaf"
-        default: return "questionmark"
-        }
+    private func updateMapRegion(coordinates: CLLocationCoordinate2D) {
+        region = MKCoordinateRegion(center: coordinates, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
     }
 }
 
+// User Restaurant Info View remains the same
+struct AdminRestaurantInfoView: View {
+    var restaurant: Restaurant
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            
+            HStack {
+                Text(restaurant.location)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                
+                Spacer()
+                
+                Text("\(restaurant.rating, specifier: "%.1f")")
+                    .font(.subheadline)
+                    .foregroundColor(.black)
+            }
+            
+            Text("Cuisines: \(restaurant.cuisine.joined(separator: ", "))")
+                .font(.subheadline)
+            
+            HStack {
+                Text("Minimum order range:")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+                Text("$\(restaurant.minimumOrderCharge, specifier: "%.2f")")
+                    .font(.subheadline)
+            }
+        }
+        .padding()
+    }
+}
+
+struct RestaurantLocationView: View {
+    @Binding var region: MKCoordinateRegion
+    var locationName: String
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Where you'll find us")
+                .font(.headline)
+                .padding(.bottom, 8)
+            
+            Map(coordinateRegion: $region)
+                .frame(height: 200)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.gray, lineWidth: 0.5)
+                )
+            
+            Text(locationName)
+                .font(.caption)
+                .padding(.top, 4)
+                .foregroundColor(.gray)
+        }
+        .padding()
+    }
+}
+
+// Preview
 #Preview {
     RestaurantDetailView(restaurant: sampleRestaurants[0])
 }
 
 
-// Helper Views for Amenities and Cuisines
-struct AmenityIconView: View {
-    var iconName: String
-    var label: String
-    
-    var body: some View {
-        VStack {
-            Image(systemName: iconName)
-                .font(.system(size: 24))
-            Text(label)
-                .font(.footnote)
-                .foregroundColor(.gray)
-        }
-    }
-}
 
-struct CuisineTagView: View {
-    var cuisine: String
-    
-    var body: some View {
-        Text(cuisine)
-            .font(.footnote)
-            .padding(.vertical, 5)
-            .padding(.horizontal, 10)
-            .background(Color.gray.opacity(0.2))
-            .cornerRadius(15)
-    }
-}
+

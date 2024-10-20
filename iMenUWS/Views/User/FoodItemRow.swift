@@ -5,10 +5,12 @@
 //  Created by student on 16/10/24.
 //
 import SwiftUI
-
 struct FoodItemRow: View {
     var foodItem: FoodItem
-    
+    @State private var quantity: Int = 0 // Start with 0 quantity
+    @State private var isAdded: Bool = false // State variable to track if the item is added
+    @EnvironmentObject var orderManager: OrderManager // Access to order manager
+
     var body: some View {
         HStack {
             // Food Item Image
@@ -39,6 +41,57 @@ struct FoodItemRow: View {
             .padding(.leading, 10)
             
             Spacer() // Pushes the content to the left
+            
+            // Quantity Management
+            HStack {
+                if isAdded {
+                    HStack {
+                        Button(action: {
+                            if quantity > 0 { // Prevent quantity from going below 0
+                                quantity -= 1
+                                if quantity == 0 {
+                                    isAdded = false // Revert to "Add" button when quantity is 0
+                                }
+                            }
+                        }) {
+                            Text("-")
+                                .foregroundStyle(.white)
+                                .font(.body)
+                                .bold()
+                        }
+                        
+                        Text("\(quantity)") // Display current quantity
+                            .foregroundStyle(.white)
+                            .font(.body)
+                            .bold()
+                        
+                        Button(action: {
+                            quantity += 1 // Increase quantity
+                        }) {
+                            Text("+")
+                                .foregroundStyle(.white)
+                                .font(.body)
+                                .bold()
+                        }
+                    }
+                } else {
+                    // Add Button
+                    Button(action: {
+                        quantity = 1 // Start with a quantity of 1 when adding
+                        isAdded = true // Change the state to added
+                        orderManager.addFoodItem(foodItem, quantity: quantity) // Add food item to order
+                    }) {
+                        Text("Add")
+                            .foregroundStyle(.white)
+                            .font(.body)
+                            .bold()
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(.pink)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .padding()
         .background(Color.white) // Background color for the row
@@ -50,8 +103,4 @@ struct FoodItemRow: View {
         )
         .padding(.horizontal)
     }
-}
-
-#Preview {
-    FoodItemRow(foodItem: foodList[0]) // Preview with a sample food item
 }

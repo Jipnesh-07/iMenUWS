@@ -2,10 +2,12 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-struct RestaurantDetailsView: View {
+struct UserRestaurantDetailsView: View {
     var restaurant: Restaurant
     @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
     @State private var locationManager = LocationManager() // Geocoding helper
+    @EnvironmentObject var orderManager: OrderManager // Access to order manager
+
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -20,18 +22,18 @@ struct RestaurantDetailsView: View {
                 }
                 
                 // Restaurant Details
-                RestaurantInfoView(restaurant: restaurant)
+                UserRestaurantInfoView(restaurant: restaurant)
               
                 Divider()
                 
                 // List of Food Items
-                RestaurantFoodItemsView(restaurantId: restaurant.id)
+                UserRestaurantFoodItemsView(restaurantId: restaurant.id)
                 
                 Divider()
                 
                 // Restaurant Location Map
                 if let coordinates = locationManager.locationCoordinates {
-                    RestaurantLocationView(region: $region, locationName: restaurant.location)
+                    UserRestaurantLocationView(region: $region, locationName: restaurant.location)
                         .onAppear {
                             updateMapRegion(coordinates: coordinates)
                         }
@@ -54,17 +56,18 @@ struct RestaurantDetailsView: View {
     }
 }
 
-struct RestaurantFoodItemsView: View {
+struct UserRestaurantFoodItemsView: View {
+    @EnvironmentObject var orderManager: OrderManager // Access to order manager
     var restaurantId: Int
     
     var body: some View {
         ForEach(foodList.filter { $0.restaurantId == restaurantId }) { foodItem in
-            FoodItemRow(foodItem: foodItem)
+            FoodItemRow(foodItem: foodItem, orderManager: _orderManager)
         }
     }
 }
 
-struct RestaurantInfoView: View {
+struct UserRestaurantInfoView: View {
     var restaurant: Restaurant
 
     var body: some View {
@@ -88,7 +91,7 @@ struct RestaurantInfoView: View {
             }
 
             // Cuisines
-            Text("Cuisines: \(restaurant.cuisines.joined(separator: ", "))")
+            Text("Cuisines: \(restaurant.cuisine.joined(separator: ", "))")
                 .font(.subheadline)
 
             // Price per Person
@@ -96,7 +99,7 @@ struct RestaurantInfoView: View {
                 Text("Minimum order range:")
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                Text("$\(restaurant.pricePerPerson, specifier: "%.2f")")
+                Text("$\(restaurant.minimumOrderCharge, specifier: "%.2f")")
                     .font(.subheadline)
             }
         }
@@ -104,7 +107,7 @@ struct RestaurantInfoView: View {
     }
 }
 
-struct RestaurantLocationView: View {
+struct UserRestaurantLocationView: View {
     @Binding var region: MKCoordinateRegion
     var locationName: String
 
@@ -132,5 +135,5 @@ struct RestaurantLocationView: View {
 }
 
 #Preview {
-    RestaurantDetailsView(restaurant: sampleRestaurants[0])
+    UserRestaurantDetailsView(restaurant: sampleRestaurants[0])
 }

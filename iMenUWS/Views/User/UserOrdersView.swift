@@ -1,92 +1,162 @@
 //
-//  UserOrdersView.swift
+//  UserOrderView.swift
 //  iMenUWS
 //
-//  Created by STUDENT on 19/10/24.
+//  Created by STUDENT on 20/10/24.
 //
 
 import SwiftUI
 
+
 struct UserOrdersView: View {
-    // Sample user orders (replace with real data from your model or backend)
-        var orders: [Order] = sampleOrders // Use the sampleOrders array defined earlier
-        
-        var body: some View {
-            NavigationView {
-                ScrollView {
-                    VStack(spacing: 15) {
-                        ForEach(orders) { order in
-                            OrderRow(order: order)
-                        }
-                    }
-                    .padding()
-                }
-                .navigationTitle("My Orders")
-            }
-        }
-}
+    @EnvironmentObject var orderManager: OrderManager // Access to order manager
 
-
-struct OrderRow: View {
-    var order: Order
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            // Display restaurant name (replace with actual restaurant data)
-            Text("Restaurant #\(order.restaurantId)")
-                .font(.headline)
-            
-            // Display each food item in the order
-            ForEach(order.foodItems) { item in
-                HStack(alignment: .top) {
-                    // Display food item image
-                    Image(item.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 60, height: 60)
-                        .cornerRadius(8)
-                    
-                    VStack(alignment: .leading, spacing: 5) {
-                        // Food item name
-                        Text(item.name)
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 15) {
+                    if orderManager.currentOrder.isEmpty {
+                        Text("No orders added.")
                             .font(.headline)
+                            .padding()
+                    } else {
+                        // Display each order item
+                        ForEach(orderManager.currentOrder) { orderItem in
+                            OrderRow(orderItem: orderItem)
+                        }
                         
-                        // Food item description (optional)
-                        Text(item.description)
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                            .lineLimit(2)
+                        // Display total price at the bottom of the orders list
+                        HStack {
+                            Text("Total Price:")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text("$\(String(format: "%.2f", orderManager.totalPrice))")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
                         
-                        // Food item price
-                        Text("$\(String(format: "%.2f", item.price))")
-                            .font(.subheadline)
-                            .foregroundColor(.black)
+                        // Delivery Address
+                                                   HStack {
+                                                       Text("Delivery Address:")
+                                                           .font(.headline)
+                                                           .fontWeight(.bold)
+                                                       Spacer()
+                                                       Text(orderManager.deliveryAddress) // Assuming deliveryAddress is in orderManager
+                                                           .font(.subheadline)
+                                                           .foregroundColor(.gray)
+                                                   }
+                                                   .padding()
+                                                   .background(Color.gray.opacity(0.1))
+                                                   .cornerRadius(12)
                     }
                 }
-                .padding(.vertical, 5)
+                .padding()
             }
-
-            // Total price
-            HStack {
-                Text("Total:")
-                    .fontWeight(.bold)
-                Spacer()
-                Text("$\(String(format: "%.2f", order.totalPrice))")
-                    .fontWeight(.bold)
-            }
-
-            // Address
-            Text("Delivery Address: \(order.address)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
+            .navigationTitle("My Orders")
         }
-        .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(12)
     }
 }
 
-
-#Preview {
-    UserOrdersView()
+struct OrderRow: View {
+    var orderItem: OrderItem
+    @EnvironmentObject var orderManager: OrderManager // Access to the order manager
+    @State private var quantity: Int
+    
+    init(orderItem: OrderItem) {
+        self.orderItem = orderItem
+        _quantity = State(initialValue: orderItem.quantity) // Initialize quantity from the orderItem
+    }
+    
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            HStack(alignment: .top) {
+                // Food Image
+                
+                
+                Image(orderItem.foodItem.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 100, height: 105)
+                    .background(Color.red.opacity(0.1))
+                    .cornerRadius(8)
+                
+                // Food Information
+                VStack(alignment: .leading, spacing: 1) {
+                    // Food Name
+                    Text(orderItem.foodItem.name)
+                        .font(.headline)
+                        .foregroundColor(.black)
+                    
+                    // Food Ingredients or Description
+                    Text(orderItem.foodItem.ingredients)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    Text("Restaurant: #\(orderItem.foodItem.restaurantId)")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                    
+                    HStack {
+                        // Quantity Selector
+                        Button(action: {
+                            if quantity > 1 {
+                                quantity -= 1
+                                orderManager.updateOrder(item: orderItem, quantity: quantity)
+                            }
+                        }) {
+                            Image(systemName: "minus.square")
+                                .foregroundColor(.gray)
+                                .font(.title2)
+                        }
+                        .padding(.trailing, 1)
+                        
+                        Text("\(quantity)")
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+                        
+                        Button(action: {
+                            quantity += 1
+                            orderManager.updateOrder(item: orderItem, quantity: quantity)
+                        }) {
+                            Image(systemName: "plus.square")
+                                .foregroundColor(.gray)
+                                .font(.title2)
+                        }
+                        .padding(.leading, 1)
+                        
+                        Spacer()
+                        
+                        // Price
+                        Text("$\(String(format: "%.2f", orderItem.foodItem.price * Double(quantity)))")
+                            .font(.headline)
+                            .foregroundColor(.black)
+                    }
+                    .padding(.top, 18)
+                }
+                .padding(.leading, 8)
+                
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+            
+            // Remove button
+            Button(action: {
+                orderManager.removeItem(orderItem: orderItem)
+            }) {
+                Image(systemName: "xmark")
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.gray)
+                    .padding(.trailing, 8)
+            }
+            .padding(8)
+            .padding(.top, 4)
+        }
+    }
 }

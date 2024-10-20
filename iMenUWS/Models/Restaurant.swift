@@ -10,15 +10,11 @@ import Foundation
 struct Restaurant: Identifiable {
     var id: Int
     var name: String
-    var cuisine: String
+    var cuisine: [String]
     var location: String // City or address
     var minimumOrderCharge: Double
     var image: String? // Optional image URL or name
     var rating: Double
-    var reviewCount: Int
-    var amenities: [String]
-    var cuisines: [String]
-    var pricePerPerson: Double
 }
 
 import CoreLocation
@@ -44,6 +40,8 @@ class LocationManager: NSObject, ObservableObject {
 
 
 let sampleRestaurants: [Restaurant] = [
-    Restaurant(id: 1, name: "The Gourmet House", cuisine: "Italian", location: "Rome, Italy", minimumOrderCharge: 50.0, image: "r1", rating: 4.8, reviewCount: 200, amenities: ["Wi-Fi", "Parking", "Air Conditioning", "Outdoor Seating"], cuisines: ["Italian", "Vegetarian"], pricePerPerson: 100.0),
-    Restaurant(id: 2, name: "Mountain View Lodge", cuisine: "Chinese", location: "Beijing, China", minimumOrderCharge: 60.0, image: "r2", rating: 4.5, reviewCount: 150, amenities: ["Wi-Fi", "Outdoor Seating"], cuisines: ["Chinese", "Vegetarian"], pricePerPerson: 80.0)
+    Restaurant(id: 1, name: "Sydney Harbor Dine", cuisine: ["Seafood"], location: "Sydney, Australia", minimumOrderCharge: 45.0, image: "r1", rating: 4.7),
+    Restaurant(id: 2, name: "Outback Grill", cuisine: ["BBQ"], location: "Melbourne, Australia", minimumOrderCharge: 55.0, image: "r2", rating: 4.6),
+    Restaurant(id: 3, name: "Coastal Breeze", cuisine: ["Mediterranean"], location: "Gold Coast, Australia", minimumOrderCharge: 50.0, image: "r3", rating: 4.8 )
 ]
+

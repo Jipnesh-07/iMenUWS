@@ -14,7 +14,10 @@ struct UserHomeView: View {
         if searchText.isEmpty {
             return sampleRestaurants
         } else {
-            return sampleRestaurants.filter { $0.name.lowercased().contains(searchText.lowercased()) }
+            return sampleRestaurants.filter { $0.name.lowercased().contains(searchText.lowercased()) ||
+                $0.location.contains(searchText.lowercased())
+                
+            }
         }
     }
 
@@ -26,11 +29,11 @@ struct UserHomeView: View {
                     Text("Top Picks")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .padding([.horizontal, .bottom])
+                        .padding(.horizontal)
 
                     // Restaurant rows displayed in a VStack
                     ForEach(filteredRestaurants) { restaurant in
-                        NavigationLink(destination: RestaurantDetailsView(restaurant: restaurant)) {
+                        NavigationLink(destination: UserRestaurantDetailsView(restaurant: restaurant)) {
                             UserRestaurantRow(restaurant: restaurant)
                                 .padding(.horizontal)
                                 .padding(.vertical, 5)

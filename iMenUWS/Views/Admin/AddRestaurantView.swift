@@ -10,14 +10,16 @@ import UIKit
 
 struct AddRestaurantView: View {
     @State private var name = ""
-    @State private var cuisine = ""
+    @State private var cuisines: [String] = []
+    @State private var cuisineInput = "" // For adding multiple cuisines
     @State private var location = ""
     @State private var minimumOrderCharge = ""
+    @State private var rating = "" // Added field for rating
     @State private var image: UIImage? = nil
     @State private var showingImagePicker = false
     
     var body: some View {
-        NavigationView { // Ensure this view is inside a NavigationView
+        NavigationView {
             Form {
                 Button(action: {
                     showingImagePicker = true
@@ -47,19 +49,39 @@ struct AddRestaurantView: View {
                 
                 Section(header: Text("Restaurant Details")) {
                     TextField("Restaurant Name", text: $name)
-                    //                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    
-                    TextField("Cuisine", text: $cuisine)
-                    //                        .textFieldStyle(RoundedBorderTextFieldStyle())
                     
                     TextField("Location", text: $location)
-                    //                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+                
+                Section(header: Text("Cuisines")) {
+                    HStack {
+                        TextField("Cuisine", text: $cuisineInput)
+                        Button(action: {
+                            if !cuisineInput.isEmpty {
+                                cuisines.append(cuisineInput)
+                                cuisineInput = ""
+                            }
+                        }) {
+                            Text("Add")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    ForEach(cuisines, id: \.self) { cuisine in
+                        Text(cuisine)
+                    }
                 }
                 
                 Section(header: Text("Order Details")) {
                     TextField("Minimum Order Charge", text: $minimumOrderCharge)
                         .keyboardType(.decimalPad)
-                    //                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    
+                }
+                
+                Section(header: Text("Ratings")) {
+                    
+                    TextField("Rating (0.0 - 5.0)", text: $rating) // Added field for rating
+                        .keyboardType(.decimalPad) // Assuming rating is a decimal
                 }
             }
             .navigationTitle("Add Restaurant")
@@ -77,14 +99,21 @@ struct AddRestaurantView: View {
     }
     
     func saveRestaurant() {
+        guard let minOrderCharge = Double(minimumOrderCharge), let restaurantRating = Double(rating) else {
+            // Handle invalid minimum order charge or rating
+            return
+        }
+        
         // You can handle image saving to your database here
         // Convert `image` to Data and save it, or upload it to a server
         
-        let query = """
-            INSERT INTO Restaurant (name, cuisine, location, minimumOrderCharge, image)
-            VALUES ('\(name)', '\(cuisine)', '\(location)', \(minimumOrderCharge), '\(image?.description ?? "")')
+        let cuisinesString = cuisines.joined(separator: ", ") // Convert array to a string
+        
+        _ = """
+            INSERT INTO Restaurant (name, cuisine, location, minimumOrderCharge, image, rating)
+            VALUES ('\(name)', '\(cuisinesString)', '\(location)', \(minOrderCharge), '\(image?.description ?? "")', \(restaurantRating))
         """
-        //        DatabaseManager.shared.executeQuery(query: query)
+        // DatabaseManager.shared.executeQuery(query: query)
     }
 }
 
