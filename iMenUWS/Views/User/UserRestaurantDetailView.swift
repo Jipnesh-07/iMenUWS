@@ -7,50 +7,79 @@ struct UserRestaurantDetailsView: View {
     @State private var region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
     @State private var locationManager = LocationManager() // Geocoding helper
     @EnvironmentObject var orderManager: OrderManager // Access to order manager
-
+    @State private var showOrderView = false // State to control navigation to the UserOrdersView
 
     var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading) {
-                // Restaurant Image
-                if let imageName = restaurant.image {
-                    Image(imageName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 250)
-                        .clipped()
+        ZStack(alignment: .bottomTrailing) {
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading) {
+                    // Restaurant Image
+                    if let imageName = restaurant.image {
+                        Image(imageName)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(height: 250)
+                            .clipped()
+                    }
+
+                    // Restaurant Details
+                    UserRestaurantInfoView(restaurant: restaurant)
+
+                    Divider()
+
+                    Text("Top Rated Food Items: ")
+                        .font(.headline)
+                        .padding([.horizontal, .bottom], 10)
+
+                    // List of Food Items
+                    UserRestaurantFoodItemsView(restaurantId: restaurant.id)
+
+                    Divider()
+
+                    // Restaurant Location Map
+                    if let coordinates = locationManager.locationCoordinates {
+                        UserRestaurantLocationView(region: $region, locationName: restaurant.location)
+                            .onAppear {
+                                updateMapRegion(coordinates: coordinates)
+                            }
+                    } else if let errorMessage = locationManager.errorMessage {
+                        Text(errorMessage).foregroundColor(.red)
+                    } else {
+                        Text("Fetching location for \(restaurant.location)...")
+                    }
                 }
-                
-                // Restaurant Details
-                UserRestaurantInfoView(restaurant: restaurant)
-              
-                Divider()
-                
-                // List of Food Items
-                UserRestaurantFoodItemsView(restaurantId: restaurant.id)
-                
-                Divider()
-                
-                // Restaurant Location Map
-                if let coordinates = locationManager.locationCoordinates {
-                    UserRestaurantLocationView(region: $region, locationName: restaurant.location)
-                        .onAppear {
-                            updateMapRegion(coordinates: coordinates)
-                        }
-                } else if let errorMessage = locationManager.errorMessage {
-                    Text(errorMessage).foregroundColor(.red)
-                } else {
-                    Text("Fetching location for \(restaurant.location)...")
+                .navigationTitle(restaurant.name)
+                .navigationBarTitleDisplayMode(.inline)
+                .onAppear {
+                    locationManager.fetchCoordinates(for: restaurant.location)
                 }
             }
-            .navigationTitle(restaurant.name)
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                locationManager.fetchCoordinates(for: restaurant.location)
+            
+            // ZStack for floating button
+            if orderManager.currentOrder.count > 0 {
+                Button(action: {
+                    showOrderView = true
+                }) {
+                    HStack {
+                        Text("\(orderManager.currentOrder.count) items")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Image(systemName: "cart.fill")
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(12)
+                    .shadow(radius: 4)
+                }
+                .padding()
+                .fullScreenCover(isPresented: $showOrderView) {
+                    UserOrdersView().environmentObject(orderManager) // Redirect to UserOrdersView
+                }
             }
         }
     }
-    
+
     private func updateMapRegion(coordinates: CLLocationCoordinate2D) {
         region = MKCoordinateRegion(center: coordinates, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
     }
@@ -59,7 +88,7 @@ struct UserRestaurantDetailsView: View {
 struct UserRestaurantFoodItemsView: View {
     @EnvironmentObject var orderManager: OrderManager // Access to order manager
     var restaurantId: Int
-    
+
     var body: some View {
         ForEach(foodList.filter { $0.restaurantId == restaurantId }) { foodItem in
             FoodItemRow(foodItem: foodItem, orderManager: _orderManager)
@@ -76,18 +105,26 @@ struct UserRestaurantInfoView: View {
             Text(restaurant.name)
                 .font(.title)
                 .bold()
-            
+
             HStack {
                 // Restaurant Location
                 Text(restaurant.location)
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                
+
                 Spacer()
-                
-                Text("\(restaurant.rating, specifier: "%.1f")")
-                    .font(.subheadline)
-                    .foregroundColor(.black)
+
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .foregroundStyle(.yellow)
+                        .font(.footnote)
+                    
+                    Text("\(restaurant.rating, specifier: "%.1f")")
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                        .font(.footnote)
+
+                }
             }
 
             // Cuisines

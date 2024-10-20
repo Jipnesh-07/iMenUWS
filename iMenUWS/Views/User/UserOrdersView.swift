@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-
 struct UserOrdersView: View {
     @EnvironmentObject var orderManager: OrderManager // Access to order manager
-
+    @State private var showingAlert = false // State for showing the confirmation alert
+    @Environment(\.presentationMode) var presentationMode // To handle redirection after confirmation
 
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: 15) {
                     if orderManager.currentOrder.isEmpty {
                         Text("No orders added.")
@@ -26,33 +26,67 @@ struct UserOrdersView: View {
                             OrderRow(orderItem: orderItem)
                         }
                         
-                        // Display total price at the bottom of the orders list
-                        HStack {
-                            Text("Total Price:")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                            Spacer()
-                            Text("$\(String(format: "%.2f", orderManager.totalPrice))")
-                                .font(.headline)
-                                .fontWeight(.bold)
+                        // Display total price and delivery address at the bottom of the orders list
+                        VStack(spacing: 10) {
+                            HStack {
+                                Text("Total Price:")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Text("$\(String(format: "%.2f", orderManager.totalPrice))")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                            }
+                            .padding()
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(12)
+                            
+                            // Delivery Address
+                            HStack {
+                                Text("Delivery Address:")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Text(orderManager.deliveryAddress) // Assuming deliveryAddress is in orderManager
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                            .padding()
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(12)
                         }
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(12)
+                        .padding(.top, 10)
                         
-                        // Delivery Address
-                                                   HStack {
-                                                       Text("Delivery Address:")
-                                                           .font(.headline)
-                                                           .fontWeight(.bold)
-                                                       Spacer()
-                                                       Text(orderManager.deliveryAddress) // Assuming deliveryAddress is in orderManager
-                                                           .font(.subheadline)
-                                                           .foregroundColor(.gray)
-                                                   }
-                                                   .padding()
-                                                   .background(Color.gray.opacity(0.1))
-                                                   .cornerRadius(12)
+                        // Confirm Order Button
+                        Button(action: {
+                            // Show the confirmation alert
+                            showingAlert = true
+                        }) {
+                            HStack {
+                                Text("Confirm Order")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Text("$\(String(format: "%.2f", orderManager.totalPrice))")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(12)
+                        }
+                        .padding(.top, 20)
+                        .alert(isPresented: $showingAlert) {
+                            Alert(
+                                title: Text("Order Confirmed"),
+                                message: Text("Your order has been successfully placed."),
+                                dismissButton: .default(Text("OK")) {
+                                    // Redirect to the home screen or any other tab
+                                    self.presentationMode.wrappedValue.dismiss() // Go back to the previous screen (User Home Screen)
+                                }
+                            )
+                        }
                     }
                 }
                 .padding()
@@ -76,11 +110,10 @@ struct OrderRow: View {
         ZStack(alignment: .topTrailing) {
             HStack(alignment: .top) {
                 // Food Image
-                
-                
                 Image(orderItem.foodItem.image)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
+                    .padding(4)
                     .frame(width: 100, height: 105)
                     .background(Color.red.opacity(0.1))
                     .cornerRadius(8)

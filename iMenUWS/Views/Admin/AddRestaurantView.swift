@@ -18,24 +18,25 @@ struct AddRestaurantView: View {
     @State private var image: UIImage? = nil
     @State private var showingImagePicker = false
     
+    var onSave: (Restaurant) -> Void // Completion handler for saving a restaurant
+
     var body: some View {
         NavigationView {
             Form {
                 Button(action: {
                     showingImagePicker = true
                 }) {
-                    // Square box for image selection
                     ZStack {
                         Rectangle()
                             .fill(Color.gray.opacity(0.2))
-                            .frame(width: 100, height: 100) // Square dimensions
+                            .frame(width: 100, height: 100)
                             .cornerRadius(10)
                         
                         if let selectedImage = image {
                             Image(uiImage: selectedImage)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: 100, height: 100) // Same dimensions for consistency
+                                .frame(width: 100, height: 100)
                                 .cornerRadius(10)
                                 .clipped()
                         } else {
@@ -49,7 +50,6 @@ struct AddRestaurantView: View {
                 
                 Section(header: Text("Restaurant Details")) {
                     TextField("Restaurant Name", text: $name)
-                    
                     TextField("Location", text: $location)
                 }
                 
@@ -75,13 +75,11 @@ struct AddRestaurantView: View {
                 Section(header: Text("Order Details")) {
                     TextField("Minimum Order Charge", text: $minimumOrderCharge)
                         .keyboardType(.decimalPad)
-                    
                 }
                 
                 Section(header: Text("Ratings")) {
-                    
-                    TextField("Rating (0.0 - 5.0)", text: $rating) // Added field for rating
-                        .keyboardType(.decimalPad) // Assuming rating is a decimal
+                    TextField("Rating (0.0 - 5.0)", text: $rating)
+                        .keyboardType(.decimalPad)
                 }
             }
             .navigationTitle("Add Restaurant")
@@ -91,31 +89,57 @@ struct AddRestaurantView: View {
                     .foregroundColor(.blue)
             })
             .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(selectedImage: $image) {
-                    // Optionally do something after image selection
-                }
+                ImagePicker(selectedImage: $image)
             }
         }
     }
     
     func saveRestaurant() {
         guard let minOrderCharge = Double(minimumOrderCharge), let restaurantRating = Double(rating) else {
-            // Handle invalid minimum order charge or rating
-            return
+            return // Handle invalid input for minimum order charge or rating
         }
+
+        // Save the image locally
+        let imageName = saveImageToDocumentsDirectory(image: image)
         
-        // You can handle image saving to your database here
-        // Convert `image` to Data and save it, or upload it to a server
+        // Create a new Restaurant instance
+        let newRestaurant = Restaurant(
+            id: UUID().hashValue,
+            name: name,
+            location: location,
+            cuisine: cuisines,
+            minimumOrderCharge: minOrderCharge,
+            image: imageName, // Use the saved image file name
+            rating: restaurantRating
+        )
         
-        let cuisinesString = cuisines.joined(separator: ", ") // Convert array to a string
-        
-        _ = """
-            INSERT INTO Restaurant (name, cuisine, location, minimumOrderCharge, image, rating)
-            VALUES ('\(name)', '\(cuisinesString)', '\(location)', \(minOrderCharge), '\(image?.description ?? "")', \(restaurantRating))
-        """
-        // DatabaseManager.shared.executeQuery(query: query)
+        // Save or append to restaurant list
+        onSave(newRestaurant)
     }
+
+    // Helper function to save image to documents directory
+    func saveImageToDocumentsDirectory(image: UIImage?) -> String? {
+        guard let image = image else { return nil }
+        
+        let fileManager = FileManager.default
+        let imageName = UUID().uuidString + ".jpg" // Unique name for the image
+        if let data = image.jpegData(compressionQuality: 0.8) {
+            if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+                let imagePath = directory.appendingPathComponent(imageName)
+                do {
+                    try data.write(to: imagePath)
+                    return imageName // Return the image file name
+                } catch {
+                    print("Error saving image: \(error.localizedDescription)")
+                }
+            }
+        }
+        return nil
+    }
+
+
 }
+
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
@@ -158,6 +182,6 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-#Preview {
-    AddRestaurantView()
-}
+//#Preview {
+//    AddRestaurantView()
+//}

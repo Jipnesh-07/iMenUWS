@@ -16,8 +16,10 @@ struct FoodItemRow: View {
             // Food Item Image
             Image(foodItem.image)
                 .resizable()
-                .scaledToFill()
+                .scaledToFit()
+                .padding(4)
                 .frame(width: 100, height: 100)
+                .background(Color.yellow.opacity(0.2))
                 .cornerRadius(10)
                 .clipped()
             
