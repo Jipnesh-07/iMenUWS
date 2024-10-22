@@ -14,7 +14,7 @@ struct FoodItemRow: View {
     var body: some View {
         HStack {
             // Food Item Image
-            Image(foodItem.image)
+            Image(foodItem.image ?? "bur1")
                 .resizable()
                 .scaledToFit()
                 .padding(4)

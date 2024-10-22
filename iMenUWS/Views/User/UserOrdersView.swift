@@ -110,7 +110,7 @@ struct OrderRow: View {
         ZStack(alignment: .topTrailing) {
             HStack(alignment: .top) {
                 // Food Image
-                Image(orderItem.foodItem.image)
+                Image(orderItem.foodItem.image ?? "bur1")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding(4)

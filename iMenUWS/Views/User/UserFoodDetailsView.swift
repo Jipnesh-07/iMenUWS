@@ -137,9 +137,9 @@ struct FoodCardContent: View {
                 
                 Spacer()
                 
-                Text(food?.description ??  "")
-                    .foregroundStyle(.gray)
-                    .font(.subheadline)
+//                Text(food?.description ??  "")
+//                    .foregroundStyle(.gray)
+//                    .font(.subheadline)
                 
                 Spacer()
                 

@@ -29,8 +29,8 @@ let sampleOrders: [Order] = [
         id: 1,
         restaurantId: 1,
         foodItems: [
-            OrderItem(id: 1, foodItem: FoodItem(id: 1, name: "Burger", restaurantId: 1, ingredients: "Beef, Lettuce", price: 60.0, image: "r2", description: "Our juicy burger with lettuce."), quantity: 1),
-            OrderItem(id: 2, foodItem: FoodItem(id: 2, name: "Pizza", restaurantId: 1, ingredients: "Cheese, Tomato", price: 80.0, image: "r4", description: "A cheesy pizza topped with fresh tomatoes."), quantity: 2)
+            OrderItem(id: 1, foodItem: FoodItem(id: 1, name: "Burger", restaurantId: 1, ingredients: "Beef, Lettuce", price: 60.0, image: "r2"), quantity: 1),
+            OrderItem(id: 2, foodItem: FoodItem(id: 2, name: "Pizza", restaurantId: 1, ingredients: "Cheese, Tomato", price: 80.0, image: "r4"), quantity: 2)
         ],
         totalPrice: 220.0, // Update totalPrice to reflect the quantities
         address: "123 Street, City"

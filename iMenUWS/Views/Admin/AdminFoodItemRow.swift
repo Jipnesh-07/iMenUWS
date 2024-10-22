@@ -10,18 +10,44 @@ struct AdminFoodItemRow: View {
     var foodItem: FoodItem
     var onEdit: () -> Void // Closure to handle editing
     var onDelete: () -> Void // Closure to handle deletion
-    
+
     var body: some View {
         HStack {
             // Food Item Image
-            Image(foodItem.image)
-                .resizable()
-                .scaledToFit()
-                .padding(4)
-                .frame(width: 100, height: 100)
-                .background(Color.yellow.opacity(0.2))
-                .cornerRadius(10)
-                .clipped()
+            if let imageName = foodItem.image, !imageName.isEmpty {
+                if imageExistsInDocumentsDirectory(imageName) {
+                    // Image is from the documents directory
+                    if let imagePath = getImagePath(from: imageName) {
+                        Image(uiImage: UIImage(contentsOfFile: imagePath) ?? UIImage())
+                            .resizable()
+                            .scaledToFit()
+                            .padding(4)
+                            .frame(width: 100, height: 100)
+                            .background(Color.yellow.opacity(0.2))
+                            .cornerRadius(10)
+                            .clipped()
+                    }
+                } else {
+                    // Image is from the app's asset catalog
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .padding(4)
+                        .frame(width: 100, height: 100)
+                        .background(Color.yellow.opacity(0.2))
+                        .cornerRadius(10)
+                        .clipped()
+                }
+            } else {
+                Rectangle() // Placeholder if image is missing
+//                    .resizable()
+                    .scaledToFit()
+                    .padding(4)
+                    .frame(width: 100, height: 100)
+                    .background(Color.yellow.opacity(0.2))
+                    .cornerRadius(10)
+                    .clipped()
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 // Food Item Name
@@ -76,4 +102,26 @@ struct AdminFoodItemRow: View {
         )
         .padding(.horizontal)
     }
+    
+    // Helper function to get the full image path
+    func getImagePath(from imageName: String) -> String? {
+        let fileManager = FileManager.default
+        if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+            return directory.appendingPathComponent(imageName).path
+        }
+        return nil
+    }
+    
+    // Helper function to check if the image exists in the documents directory
+    func imageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
+        let fileManager = FileManager.default
+        if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let imagePath = directory.appendingPathComponent(imageName)
+            return fileManager.fileExists(atPath: imagePath.path)
+        }
+        return false
+    }
 }
+
+
+
