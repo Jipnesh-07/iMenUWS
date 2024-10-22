@@ -16,7 +16,7 @@ struct AdminRestaurantDetailView: View {
     @State private var locationManager = LocationManager()
     @State private var isAddingFoodItem = false
     @State private var foodItems: [FoodItem] = []
-
+    
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading) {
@@ -42,19 +42,19 @@ struct AdminRestaurantDetailView: View {
                         .fill(Color.gray)
                         .frame(height: 250)
                 }
-
+                
                 // Restaurant Details
                 AdminRestaurantInfoView(restaurant: restaurant)
-
+                
                 Divider()
-
+                
                 HStack {
                     Text("Top Food Items:")
                         .font(.headline)
                         .padding([.horizontal, .bottom], 10)
-
+                    
                     Spacer()
-
+                    
                     Button(action: {
                         isAddingFoodItem = true
                     }) {
@@ -71,12 +71,12 @@ struct AdminRestaurantDetailView: View {
                     }
                 }
                 .padding()
-
+                
                 // Display existing food items
-                AdminRestaurantFoodItemsView(restaurantId: restaurant.id, foodItems: foodItems)
-
+                AdminRestaurantFoodItemsView(restaurantId: restaurant.id, foodItems: $foodItems)
+                
                 Divider()
-
+                
                 if let coordinates = locationManager.locationCoordinates {
                     RestaurantLocationView(region: $region, locationName: restaurant.location)
                         .onAppear {
@@ -95,23 +95,23 @@ struct AdminRestaurantDetailView: View {
             }
         }
     }
-
+    
     private func loadExistingFoodItems() {
         // Load existing food items for the restaurant from your data source
         // Example:
         foodItems = fetchFoodItemsForRestaurant(restaurantId: restaurant.id) // Implement this function based on your data source
     }
-
+    
     // Define the fetch function here
-       private func fetchFoodItemsForRestaurant(restaurantId: Int) -> [FoodItem] {
-           // Replace this with your actual data retrieval logic
-           return foodList.filter { $0.restaurantId == restaurantId }
-       }
+    private func fetchFoodItemsForRestaurant(restaurantId: Int) -> [FoodItem] {
+        // Replace this with your actual data retrieval logic
+        return foodList.filter { $0.restaurantId == restaurantId }
+    }
     
     private func updateMapRegion(coordinates: CLLocationCoordinate2D) {
         region = MKCoordinateRegion(center: coordinates, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
     }
-
+    
     func imageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
         let fileManager = FileManager.default
         if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -120,7 +120,7 @@ struct AdminRestaurantDetailView: View {
         }
         return false
     }
-
+    
     func getImagePath(from imageName: String) -> String? {
         let fileManager = FileManager.default
         if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -163,25 +163,36 @@ struct RestaurantLocationView: View {
 
 struct AdminRestaurantFoodItemsView: View {
     @EnvironmentObject var orderManager: OrderManager // Access to order manager
+    @State private var showingEditView = false
+    @State private var currentFoodItem: FoodItem? // To hold the item being edited
     var restaurantId: Int
-    var foodItems: [FoodItem] // Accept food items
-
+    @Binding var foodItems: [FoodItem] // Accept food items as a binding
+    
     var body: some View {
         VStack {
             ForEach(foodItems.filter { $0.restaurantId == restaurantId }) { foodItem in
                 AdminFoodItemRow(foodItem: foodItem,
-                                 onEdit: {
-                    // Handle edit action here, e.g., present edit view
-                    print("Editing \(foodItem.name)")
-                },
+                                 onEdit: { updatedItem in
+                                     // Update the food item in the binding
+                                     if let index = foodItems.firstIndex(where: { $0.id == updatedItem.id }) {
+                                         foodItems[index] = updatedItem // Update the food item
+                                         print("Updated item: \(updatedItem.name)")
+                                     }
+                                 },
                                  onDelete: {
-                    // Handle delete action here
-                    print("Deleting \(foodItem.name)")
-                })
+                                     // Handle delete logic here
+                                     if let index = foodItems.firstIndex(where: { $0.id == foodItem.id }) {
+                                         foodItems.remove(at: index) // Remove the food item
+                                         print("Deleted item: \(foodItem.name)")
+                                     }
+                                 })
             }
         }
     }
 }
+
+
+
 
 
 

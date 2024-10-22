@@ -8,15 +8,24 @@ import SwiftUI
 
 struct AdminFoodItemRow: View {
     var foodItem: FoodItem
-    var onEdit: () -> Void // Closure to handle editing
+    var onEdit: (FoodItem) -> Void // Closure to handle editing with updated food item
     var onDelete: () -> Void // Closure to handle deletion
+
+    @State private var isEditing: Bool = false
+    @State private var editedFoodItem: FoodItem
+
+    init(foodItem: FoodItem, onEdit: @escaping (FoodItem) -> Void, onDelete: @escaping () -> Void) {
+        self.foodItem = foodItem
+        self.onEdit = onEdit
+        self.onDelete = onDelete
+        self._editedFoodItem = State(initialValue: foodItem) // Initialize with current food item
+    }
 
     var body: some View {
         HStack {
             // Food Item Image
-            if let imageName = foodItem.image, !imageName.isEmpty {
+            if let imageName = editedFoodItem.image, !imageName.isEmpty {
                 if imageExistsInDocumentsDirectory(imageName) {
-                    // Image is from the documents directory
                     if let imagePath = getImagePath(from: imageName) {
                         Image(uiImage: UIImage(contentsOfFile: imagePath) ?? UIImage())
                             .resizable()
@@ -28,7 +37,6 @@ struct AdminFoodItemRow: View {
                             .clipped()
                     }
                 } else {
-                    // Image is from the app's asset catalog
                     Image(imageName)
                         .resizable()
                         .scaledToFit()
@@ -40,7 +48,6 @@ struct AdminFoodItemRow: View {
                 }
             } else {
                 Rectangle() // Placeholder if image is missing
-//                    .resizable()
                     .scaledToFit()
                     .padding(4)
                     .frame(width: 100, height: 100)
@@ -48,39 +55,62 @@ struct AdminFoodItemRow: View {
                     .cornerRadius(10)
                     .clipped()
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
-                // Food Item Name
-                Text(foodItem.name)
-                    .font(.headline)
-                    .foregroundColor(.black)
-                
-                // Ingredients
-                Text(foodItem.ingredients)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                // Price
-                Text("Price: $\(foodItem.price, specifier: "%.2f")")
-                    .font(.subheadline)
-                    .bold()
-                    .foregroundColor(.primary)
+                if isEditing {
+                    TextField("Name", text: $editedFoodItem.name)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    
+                    TextField("Ingredients", text: $editedFoodItem.ingredients)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    
+                    TextField("Price", value: $editedFoodItem.price, formatter: NumberFormatter())
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } else {
+                    // Food Item Name
+                    Text(editedFoodItem.name)
+                        .font(.headline)
+                        .foregroundColor(.black)
+                    
+                    // Ingredients
+                    Text(editedFoodItem.ingredients)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    
+                    // Price
+                    Text("Price: $\(editedFoodItem.price, specifier: "%.2f")")
+                        .font(.subheadline)
+                        .bold()
+                        .foregroundColor(.primary)
+                }
             }
             .padding(.leading, 10)
-            
+
             Spacer() // Pushes the content to the left
-            
+
             // Action Buttons for Edit and Delete
             HStack {
-                Button(action: {
-                    onEdit() // Call the edit action
-                }) {
-                    Image(systemName: "pencil")
-                        .font(.headline)
-                        .foregroundColor(.blue)
-                        .frame(width: 30, height: 30)
+                if isEditing {
+                    Button(action: {
+                        onEdit(editedFoodItem) // Call the edit action with updated food item
+                        isEditing.toggle() // Exit edit mode
+                    }) {
+                        Image(systemName: "checkmark")
+                            .font(.headline)
+                            .foregroundColor(.green)
+                            .frame(width: 30, height: 30)
+                    }
+                } else {
+                    Button(action: {
+                        isEditing.toggle() // Toggle to edit mode
+                    }) {
+                        Image(systemName: "pencil")
+                            .font(.headline)
+                            .foregroundColor(.blue)
+                            .frame(width: 30, height: 30)
+                    }
                 }
-                
+
                 Button(action: {
                     onDelete() // Call the delete action
                 }) {
@@ -102,7 +132,7 @@ struct AdminFoodItemRow: View {
         )
         .padding(.horizontal)
     }
-    
+
     // Helper function to get the full image path
     func getImagePath(from imageName: String) -> String? {
         let fileManager = FileManager.default
@@ -111,7 +141,7 @@ struct AdminFoodItemRow: View {
         }
         return nil
     }
-    
+
     // Helper function to check if the image exists in the documents directory
     func imageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
         let fileManager = FileManager.default
@@ -122,6 +152,3 @@ struct AdminFoodItemRow: View {
         return false
     }
 }
-
-
-
