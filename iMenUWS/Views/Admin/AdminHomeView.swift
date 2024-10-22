@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct AdminHomeView: View {
     @State private var isPresented: Bool = false
     @State private var searchText: String = ""
@@ -76,7 +75,7 @@ struct AdminHomeView: View {
                     }
                 ))
             }
-
+            
         }
         .navigationBarBackButtonHidden(true)
     }

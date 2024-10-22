@@ -19,7 +19,6 @@ struct AdminTabBarController: View {
                 .tabItem{
                     Label("Profile", systemImage: "person.fill")
                 }
-            
         }
     }
 }
