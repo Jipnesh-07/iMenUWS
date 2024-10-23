@@ -22,7 +22,7 @@ struct AdminRestaurantDetailView: View {
             VStack(alignment: .leading) {
                 // Restaurant Image
                 if let imageName = restaurant.image, !imageName.isEmpty {
-                    if imageExistsInDocumentsDirectory(imageName) {
+                    if CheckIfImageExistsInDocumentsDirectory(imageName) {
                         if let imagePath = getImagePath(from: imageName) {
                             Image(uiImage: UIImage(contentsOfFile: imagePath) ?? UIImage())
                                 .resizable()
@@ -91,12 +91,12 @@ struct AdminRestaurantDetailView: View {
             .navigationBarTitle(restaurant.name, displayMode: .inline)
             .onAppear {
                 locationManager.fetchCoordinates(for: restaurant.location)
-                loadExistingFoodItems() // Load existing food items when the view appears
+                loadPreExistingFoodItem() // Load existing food items when the view appears
             }
         }
     }
     
-    private func loadExistingFoodItems() {
+    private func loadPreExistingFoodItem() {
         // Load existing food items for the restaurant from your data source
         // Example:
         foodItems = fetchFoodItemsForRestaurant(restaurantId: restaurant.id) // Implement this function based on your data source
@@ -112,7 +112,7 @@ struct AdminRestaurantDetailView: View {
         region = MKCoordinateRegion(center: coordinates, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
     }
     
-    func imageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
+    func CheckIfImageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
         let fileManager = FileManager.default
         if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
             let imagePath = directory.appendingPathComponent(imageName)
@@ -173,29 +173,23 @@ struct AdminRestaurantFoodItemsView: View {
             ForEach(foodItems.filter { $0.restaurantId == restaurantId }) { foodItem in
                 AdminFoodItemRow(foodItem: foodItem,
                                  onEdit: { updatedItem in
-                                     // Update the food item in the binding
-                                     if let index = foodItems.firstIndex(where: { $0.id == updatedItem.id }) {
-                                         foodItems[index] = updatedItem // Update the food item
-                                         print("Updated item: \(updatedItem.name)")
-                                     }
-                                 },
+                    // Update the food item in the binding
+                    if let index = foodItems.firstIndex(where: { $0.id == updatedItem.id }) {
+                        foodItems[index] = updatedItem // Update the food item
+                        print("Updated item: \(updatedItem.name)")
+                    }
+                },
                                  onDelete: {
-                                     // Handle delete logic here
-                                     if let index = foodItems.firstIndex(where: { $0.id == foodItem.id }) {
-                                         foodItems.remove(at: index) // Remove the food item
-                                         print("Deleted item: \(foodItem.name)")
-                                     }
-                                 })
+                    // Handle delete logic here
+                    if let index = foodItems.firstIndex(where: { $0.id == foodItem.id }) {
+                        foodItems.remove(at: index) // Remove the food item
+                        print("Deleted item: \(foodItem.name)")
+                    }
+                })
             }
         }
     }
 }
-
-
-
-
-
-
 
 // User Restaurant Info View remains the same
 struct AdminRestaurantInfoView: View {
@@ -230,10 +224,6 @@ struct AdminRestaurantInfoView: View {
         .padding()
     }
 }
-//// Preview
-//#Preview {
-//    AdminRestaurantDetailView(restaurant: sampleRestaurants[0])
-//}
 
 
 

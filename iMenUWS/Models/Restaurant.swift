@@ -6,8 +6,8 @@
 //
 
 import Foundation
+import CoreLocation
 
-import Foundation
 
 class Restaurant: ObservableObject, Identifiable {
     let id: Int
@@ -29,9 +29,7 @@ class Restaurant: ObservableObject, Identifiable {
     }
 }
 
-
-import CoreLocation
-
+// location manager for managing the location accross the views
 class LocationManager: NSObject, ObservableObject {
     private let geocoder = CLGeocoder()
 
@@ -48,8 +46,6 @@ class LocationManager: NSObject, ObservableObject {
         }
     }
 }
-
-
 
 
 let sampleRestaurants: [Restaurant] = [

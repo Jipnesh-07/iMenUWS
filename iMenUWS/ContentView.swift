@@ -9,9 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-//        LoginView()
-        AdminTabBarController()
-//        UserTabBarControllerr()
+        LoginView() // Login View for logging into the view
+        //        AdminTabBarController() // for direct access to admin view
+        //        UserTabBarControllerr() // for direct access to user view
     }
 }
 

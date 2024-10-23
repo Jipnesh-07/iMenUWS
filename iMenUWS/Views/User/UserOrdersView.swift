@@ -9,9 +9,9 @@ import SwiftUI
 
 struct UserOrdersView: View {
     @EnvironmentObject var orderManager: OrderManager // Access to order manager
-    @State private var showingAlert = false // State for showing the confirmation alert
-    @Environment(\.presentationMode) var presentationMode // To handle redirection after confirmation
-
+    @State private var showingAlert = false
+    @Environment(\.presentationMode) var presentationMode
+    
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
@@ -26,7 +26,6 @@ struct UserOrdersView: View {
                             OrderRow(orderItem: orderItem)
                         }
                         
-                        // Display total price and delivery address at the bottom of the orders list
                         VStack(spacing: 10) {
                             HStack {
                                 Text("Total Price:")
@@ -47,7 +46,7 @@ struct UserOrdersView: View {
                                     .font(.headline)
                                     .fontWeight(.bold)
                                 Spacer()
-                                Text(orderManager.deliveryAddress) // Assuming deliveryAddress is in orderManager
+                                Text(orderManager.deliveryAddress) // Accessing deliveryAddress from the orderManager
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
                             }
@@ -57,9 +56,8 @@ struct UserOrdersView: View {
                         }
                         .padding(.top, 10)
                         
-                        // Confirm Order Button
                         Button(action: {
-                            // Show the confirmation alert
+                            // Showing Alert for the Confirmation
                             showingAlert = true
                         }) {
                             HStack {
@@ -83,7 +81,7 @@ struct UserOrdersView: View {
                                 message: Text("Your order has been successfully placed."),
                                 dismissButton: .default(Text("OK")) {
                                     // Redirect to the home screen or any other tab
-                                    self.presentationMode.wrappedValue.dismiss() // Go back to the previous screen (User Home Screen)
+                                    self.presentationMode.wrappedValue.dismiss()
                                 }
                             )
                         }

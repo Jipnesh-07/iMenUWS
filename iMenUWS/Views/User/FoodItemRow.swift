@@ -5,11 +5,12 @@
 //  Created by student on 16/10/24.
 //
 import SwiftUI
+
 struct FoodItemRow: View {
     var foodItem: FoodItem
-    @State private var quantity: Int = 0 // Start with 0 quantity
-    @State private var isAdded: Bool = false // State variable to track if the item is added
-    @EnvironmentObject var orderManager: OrderManager // Access to order manager
+    @State private var quantity: Int = 0
+    @State private var isAdded: Bool = false 
+    @EnvironmentObject var orderManager: OrderManager 
 
     var body: some View {
         HStack {
@@ -42,17 +43,21 @@ struct FoodItemRow: View {
             }
             .padding(.leading, 10)
             
-            Spacer() // Pushes the content to the left
+            Spacer()
             
-            // Quantity Management
+            // For Managing Quantity
             HStack {
                 if isAdded {
                     HStack {
+                        // Decrease Quantity
                         Button(action: {
-                            if quantity > 0 { // Prevent quantity from going below 0
+                            if quantity > 0 {
                                 quantity -= 1
+                                orderManager.updateOrder(item: OrderItem(id: foodItem.id, foodItem: foodItem, quantity: quantity), quantity: quantity)
+                                
                                 if quantity == 0 {
-                                    isAdded = false // Revert to "Add" button when quantity is 0
+                                    isAdded = false
+                                    orderManager.removeItem(orderItem: OrderItem(id: foodItem.id, foodItem: foodItem, quantity: quantity))
                                 }
                             }
                         }) {
@@ -62,13 +67,15 @@ struct FoodItemRow: View {
                                 .bold()
                         }
                         
-                        Text("\(quantity)") // Display current quantity
+                        Text("\(quantity)")
                             .foregroundStyle(.white)
                             .font(.body)
                             .bold()
                         
+                        // Increase Quantity
                         Button(action: {
-                            quantity += 1 // Increase quantity
+                            quantity += 1
+                            orderManager.updateOrder(item: OrderItem(id: foodItem.id, foodItem: foodItem, quantity: quantity), quantity: quantity)
                         }) {
                             Text("+")
                                 .foregroundStyle(.white)
@@ -79,9 +86,9 @@ struct FoodItemRow: View {
                 } else {
                     // Add Button
                     Button(action: {
-                        quantity = 1 // Start with a quantity of 1 when adding
-                        isAdded = true // Change the state to added
-                        orderManager.addFoodItem(foodItem, quantity: quantity) // Add food item to order
+                        quantity = 1 // Set initial quantity
+                        isAdded = true // Change to quantity management
+                        orderManager.addFoodItem(foodItem, quantity: quantity) // Add item to the order
                     }) {
                         Text("Add")
                             .foregroundStyle(.white)
@@ -96,13 +103,20 @@ struct FoodItemRow: View {
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .padding()
-        .background(Color.white) // Background color for the row
-        .cornerRadius(10) // Rounded corners for the row
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2) // Shadow effect
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1) // Light border
+                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
         )
         .padding(.horizontal)
+        .onAppear {
+            // Check if this food item is already in the order and update the state
+            if let existingOrderItem = orderManager.currentOrder.first(where: { $0.foodItem.id == foodItem.id }) {
+                isAdded = true
+                quantity = existingOrderItem.quantity
+            }
+        }
     }
 }

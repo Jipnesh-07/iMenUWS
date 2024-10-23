@@ -9,11 +9,11 @@ import SwiftUI
 
 struct UserProfileView: View {
     @AppStorage("isLoggedIn") private var isLoggedIn = false
-
+    
     var body: some View {
         VStack {
             Text("User Profile")
-
+            
             Button("Logout") {
                 isLoggedIn = false // Logout and return to LoginView
             }

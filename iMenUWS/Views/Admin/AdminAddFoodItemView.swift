@@ -12,12 +12,12 @@ struct AdminAddFoodItemView: View {
     @State private var price: String = ""
     @State private var image: UIImage? = nil
     @State private var showingImagePicker = false
-
+    
     var restaurantId: Int
     var onAddFoodItem: (FoodItem) -> Void
-
+    
     @Environment(\.presentationMode) var presentationMode
-
+    
     var body: some View {
         NavigationView {
             Form {
@@ -51,7 +51,7 @@ struct AdminAddFoodItemView: View {
                 }
                 
                 Button(action: {
-                    if let foodPrice = Double(price), let imageName = saveImageToDocumentsDirectory(image: image) {
+                    if let foodPrice = Double(price), let imageName = AddingImagetoDocumentsDirectory(image: image) {
                         let newFoodItem = FoodItem(
                             id: UUID().hashValue, // Generate a unique ID using UUID
                             name: name,
@@ -78,15 +78,15 @@ struct AdminAddFoodItemView: View {
             })
         }
     }
-
-    private func saveImageToDocumentsDirectory(image: UIImage?) -> String? {
+    
+    private func AddingImagetoDocumentsDirectory(image: UIImage?) -> String? {
         guard let image = image else { return nil }
         if let data = image.jpegData(compressionQuality: 1.0) {
             let fileManager = FileManager.default
             if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
                 let imageName = "\(UUID().uuidString).jpg"
                 let fileURL = directory.appendingPathComponent(imageName)
-
+                
                 do {
                     try data.write(to: fileURL)
                     return imageName
@@ -130,7 +130,7 @@ struct ImagePicker3: UIViewControllerRepresentable {
             parent.presentationMode.wrappedValue.dismiss()
         }
     }
-
+    
     
     func makeCoordinator() -> Coordinator {
         return Coordinator(image: $image, parent: self)

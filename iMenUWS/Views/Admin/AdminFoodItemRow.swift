@@ -8,7 +8,7 @@ import SwiftUI
 
 struct AdminFoodItemRow: View {
     var foodItem: FoodItem
-    var onEdit: (FoodItem) -> Void // Closure to handle editing with updated food item
+    var onEdit: (FoodItem) -> Void // Closure to handle editing
     var onDelete: () -> Void // Closure to handle deletion
 
     @State private var isEditing: Bool = false
@@ -18,14 +18,14 @@ struct AdminFoodItemRow: View {
         self.foodItem = foodItem
         self.onEdit = onEdit
         self.onDelete = onDelete
-        self._editedFoodItem = State(initialValue: foodItem) // Initialize with current food item
+        self._editedFoodItem = State(initialValue: foodItem)
     }
 
     var body: some View {
         HStack {
             // Food Item Image
             if let imageName = editedFoodItem.image, !imageName.isEmpty {
-                if imageExistsInDocumentsDirectory(imageName) {
+                if CheckIfImageExistsInDocumentsDirectory(imageName) {
                     if let imagePath = getImagePath(from: imageName) {
                         Image(uiImage: UIImage(contentsOfFile: imagePath) ?? UIImage())
                             .resizable()
@@ -93,7 +93,7 @@ struct AdminFoodItemRow: View {
                 if isEditing {
                     Button(action: {
                         onEdit(editedFoodItem) // Call the edit action with updated food item
-                        isEditing.toggle() // Exit edit mode
+                        isEditing.toggle()
                     }) {
                         Image(systemName: "checkmark")
                             .font(.headline)
@@ -123,12 +123,12 @@ struct AdminFoodItemRow: View {
             .padding(.leading, 10)
         }
         .padding()
-        .background(Color.white) // Background color for the row
-        .cornerRadius(10) // Rounded corners for the row
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2) // Shadow effect
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1) // Light border
+                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
         )
         .padding(.horizontal)
     }
@@ -143,7 +143,7 @@ struct AdminFoodItemRow: View {
     }
 
     // Helper function to check if the image exists in the documents directory
-    func imageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
+    func CheckIfImageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
         let fileManager = FileManager.default
         if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
             let imagePath = directory.appendingPathComponent(imageName)

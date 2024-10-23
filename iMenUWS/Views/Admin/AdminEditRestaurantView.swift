@@ -35,18 +35,10 @@ struct AdminEditRestaurantView: View {
                 restaurant.name = name
                 restaurant.location = location
                 restaurant.minimumOrderCharge = minimumOrderCharge
-                
-                // Close the edit view
-                // You can add any additional logic needed here
             }
+            
         }
         .navigationTitle("Edit Restaurant")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-
-
-//// Preview
-//#Preview {
-//    AdminEditRestaurantView(restaurant: .constant(sampleRestaurants[0]))
-//}

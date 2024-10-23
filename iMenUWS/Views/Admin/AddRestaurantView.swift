@@ -19,7 +19,7 @@ struct AddRestaurantView: View {
     @State private var showingImagePicker = false
     
     var onSave: (Restaurant) -> Void // Completion handler for saving a restaurant
-
+    
     var body: some View {
         NavigationView {
             Form {
@@ -84,7 +84,7 @@ struct AddRestaurantView: View {
             }
             .navigationTitle("Add Restaurant")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(trailing: Button(action: saveRestaurant) {
+            .navigationBarItems(trailing: Button(action: saveRestaurantDetails) {
                 Text("Save")
                     .foregroundColor(.blue)
             })
@@ -94,31 +94,31 @@ struct AddRestaurantView: View {
         }
     }
     
-    func saveRestaurant() {
+    func saveRestaurantDetails() {
         guard let minOrderCharge = Double(minimumOrderCharge), let restaurantRating = Double(rating) else {
-            return // Handle invalid input for minimum order charge or rating
+            return // Handle invalid input
         }
-
-        // Save the image locally
-        let imageName = saveImageToDocumentsDirectory(image: image)
         
-        // Create a new Restaurant instance
+        // Save the image to local storage
+        let imageName = ImageAdditionToDocumentsDirectory(image: image)
+        
+        // New Restaurant Instance will ne created
         let newRestaurant = Restaurant(
             id: UUID().hashValue,
             name: name,
             location: location,
             cuisine: cuisines,
             minimumOrderCharge: minOrderCharge,
-            image: imageName, // Use the saved image file name
+            image: imageName,
             rating: restaurantRating
         )
         
-        // Save or append to restaurant list
+        // appending to restaurant list
         onSave(newRestaurant)
     }
-
+    
     // Helper function to save image to documents directory
-    func saveImageToDocumentsDirectory(image: UIImage?) -> String? {
+    func ImageAdditionToDocumentsDirectory(image: UIImage?) -> String? {
         guard let image = image else { return nil }
         
         let fileManager = FileManager.default
@@ -136,8 +136,8 @@ struct AddRestaurantView: View {
         }
         return nil
     }
-
-
+    
+    
 }
 
 
@@ -182,6 +182,3 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-//#Preview {
-//    AddRestaurantView()
-//}

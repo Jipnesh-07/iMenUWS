@@ -14,7 +14,7 @@ struct AdminRestaurantRow: View {
         HStack {
             // Restaurant Image
             if let imageName = restaurant.image, !imageName.isEmpty {
-                if imageExistsInDocumentsDirectory(imageName) {
+                if CheckIfImageExistsInDocumentsDirectory(imageName) {
                     // Image is from the documents directory
                     if let imagePath = getImagePath(from: imageName) {
                         Image(uiImage: UIImage(contentsOfFile: imagePath) ?? UIImage())
@@ -40,11 +40,6 @@ struct AdminRestaurantRow: View {
                     .cornerRadius(10)
             }
             
-            
-            
-            
-            
-            
             VStack(alignment: .leading, spacing: 4) {
                 Text(restaurant.name)
                     .font(.headline)
@@ -61,17 +56,17 @@ struct AdminRestaurantRow: View {
             }
             .padding(.leading, 10)
             
-            Spacer() // Pushes the content to the left
+            Spacer()
         }
         .padding()
-        .background(Color.white) // Background color for the row
-        .cornerRadius(10) // Rounded corners for the row
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2) // Shadow effect
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1) // Light border
+                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
         )
-        .padding() // Vertical padding between rows
+        .padding()
     }
     
     // Helper function to get the full image path
@@ -85,7 +80,7 @@ struct AdminRestaurantRow: View {
     }
     
     // Helper function to check if the image exists in the documents directory
-    func imageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
+    func CheckIfImageExistsInDocumentsDirectory(_ imageName: String) -> Bool {
         let fileManager = FileManager.default
         if let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
             let imagePath = directory.appendingPathComponent(imageName)
@@ -95,7 +90,3 @@ struct AdminRestaurantRow: View {
     }
     
 }
-
-//#Preview {
-//    RestaurantRow(restaurant: Restaurant(id: 1, name: "The WonderInn Riverside Retreat", cuisine: "Thai", location: "Norway", minimumOrderCharge: 50.0, image: "r1"))
-//}

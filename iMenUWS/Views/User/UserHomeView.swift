@@ -8,8 +8,8 @@ import SwiftUI
 
 struct UserHomeView: View {
     @State private var searchText: String = ""
-
-    // Filtered list of restaurants based on search text
+    
+    // For Filtering List of Restaurants Based on Search Text
     var filteredRestaurants: [Restaurant] {
         if searchText.isEmpty {
             return sampleRestaurants
@@ -20,7 +20,7 @@ struct UserHomeView: View {
             }
         }
     }
-
+    
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
@@ -30,7 +30,7 @@ struct UserHomeView: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.horizontal)
-
+                    
                     // Restaurant rows displayed in a VStack
                     ForEach(filteredRestaurants) { restaurant in
                         NavigationLink(destination: UserRestaurantDetailsView(restaurant: restaurant)) {
@@ -45,7 +45,7 @@ struct UserHomeView: View {
             }
         }
         .navigationBarBackButtonHidden(true) // Hide the back button
-
+        
     }
 }
 

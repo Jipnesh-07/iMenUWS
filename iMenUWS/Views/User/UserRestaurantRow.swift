@@ -63,14 +63,13 @@ struct UserRestaurantRow: View {
             .font(.footnote)
         }
         .padding()
-        .background(Color.white) // White background
-        .cornerRadius(10) // Rounded corners
-        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2) // Minimal shadow
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
         .overlay(
-            RoundedRectangle(cornerRadius: 10) // Border with same corner radius
-                .stroke(Color.gray.opacity(0.2), lineWidth: 1) // Light gray border
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
         )
-//        .padding(.horizontal) 
     }
 }
 
